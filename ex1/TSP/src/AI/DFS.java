@@ -23,8 +23,7 @@ public class DFS implements TSPSolver {
 		tempCosti = new int[g.getSize() + 1];
 	}
 
-	@Override
-	public Path process() {
+	public int[] process() {
 		
 		
 		for (Node n : grafo.getNodes()) {
@@ -34,7 +33,8 @@ public class DFS implements TSPSolver {
 			dfs(1, n);
 		}
 
-		return new Path(minCammino);
+		//return new Path(minCammino);
+		return minCammino;
 	}
 
 	/**
@@ -55,7 +55,7 @@ public class DFS implements TSPSolver {
 				if(f) continue;
 				
 				cammino[k]=u.getId();
-				tempCosti[k]=tempCosti[k-1] + grafo.getWeight(u, v);
+				tempCosti[k]=tempCosti[k-1] + u.getWeight(v);
 				dfs(k + 1, v);
 			}
 		}
@@ -66,7 +66,7 @@ public class DFS implements TSPSolver {
 				{
 					soluzTrovate++;
 					
-					tempCosti[k]= tempCosti[k-1] + grafo.getWeight(u, v);
+					tempCosti[k]= tempCosti[k-1] + u.getWeight(v);
 					cammino[k]=cammino[0];
 					if(minCost>tempCosti[k]) {
 						for(int i=0;i<grafo.getSize()+1;i++)

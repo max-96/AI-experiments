@@ -1,5 +1,6 @@
 package AI;
 
+import java.util.HashSet;
 import java.util.LinkedList;
 
 import graph.Graph;
@@ -29,16 +30,50 @@ public class DFS implements TSPSolver {
 	}
 
 	
-	public int[] process()
+	public Node[] process()
 	{
 		//stack dove salvo gli stati
 		LinkedList<Stato> stack;
 		
 		//popolo la stack con gli stati root di tutti i nodi
 		for(Node n: grafo.getNodes())
-			stack.add(new Stato(1, n, null).setRoot());
+			stack.add(new Stato(n, null, true));
 		
-		//ora inizio la dfs come 
+		//ora inizio la dfs iterativa, come un buffer LIFO
+		
+		while(!stack.isEmpty())
+		{
+			if(Options.COUNTER_ON)
+				counter++;
+			
+			Stato s=stack.removeLast();
+			
+			
+			if(s.getDepth() == grafo.getSize())
+			{
+				//Mossa obbligata, deve tornare allo stato iniziale
+				
+			}
+			else
+			{
+				Node e=s.getLastNode();
+				for(Node i: e.getAdjacentNodes())
+				{
+					if(!s.isVisited(i))
+					{
+						Stato t=new Stato(i, s, false);
+						t.getCost();
+						stack.add(t);
+						
+					}
+				}
+				
+			}
+			
+			
+			
+			
+		}
 			
 		
 		
@@ -54,9 +89,12 @@ public class DFS implements TSPSolver {
 	private class Stato{
 		
 		private Node lastNode;
-		private int d; //profondità
+		private Node rootNode;
+		private int depth; //profondità
 		private Stato parent;
 		private boolean isRoot=false;
+		private HashSet<Node> visitati;
+		
 		
 		private int costo=-1;
 		/**
@@ -65,15 +103,33 @@ public class DFS implements TSPSolver {
 		 * @param cammino array dei nodi attraversati
 		 * @param p stato parent se esiste
 		 */
-		public Stato(int k, Node last, Stato p)
+		public Stato(Node last, Stato p, boolean isRoot)
 		{
-			d=k;
 			lastNode=last;
-			parent=p;
+			if(isRoot)
+			{
+				this.isRoot=true;
+				rootNode=last;
+				visitati=new HashSet<>();
+				parent=null;
+				depth=1;
+			}
+			else
+			{
+				parent=p;
+				rootNode=p.rootNode;
+				visitati=new HashSet<>(p.visitati);
+				depth=p.depth+1;
+			}
+			visitati.add(last);
 		}
 		
-		public Stato setRoot() { isRoot=true; costo=0; }
 		
+		
+		public boolean isVisited(Node e)
+		{
+			return visitati.contains(e);
+		}
 		public Node getLastNode() {
 			return lastNode;
 		}
@@ -90,6 +146,10 @@ public class DFS implements TSPSolver {
 			return costo;
 		}
 		
+		public int getDepth()
+		{
+			return depth;
+		}
 		
 	}
 	

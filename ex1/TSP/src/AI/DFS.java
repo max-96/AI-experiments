@@ -1,5 +1,7 @@
 package AI;
 
+import java.util.LinkedList;
+
 import graph.Graph;
 import graph.Node;
 import graph.Path;
@@ -7,12 +9,15 @@ import testing.Options;
 
 public class DFS implements TSPSolver {
 
-	private Graph grafo;
-	private int counter = 0;
-	private int soluzTrovate=0;
+	private Graph grafo; //grafo da risolvere
+	
+	/
+	private int counter = 0; //contatore azioni
+	private int soluzTrovate=0; //contatore soluzioni
 
 	private int[] minCammino;
 	private int minCost=Integer.MAX_VALUE;
+	private boolean used=false;
 
 	private int[] cammino;
 	private int[] tempCosti;
@@ -23,8 +28,75 @@ public class DFS implements TSPSolver {
 		tempCosti = new int[g.getSize() + 1];
 	}
 
-	public int[] process() {
+	
+	public int[] process()
+	{
+		//stack dove salvo gli stati
+		LinkedList<Stato> stack;
 		
+		//popolo la stack con gli stati root di tutti i nodi
+		for(Node n: grafo.getNodes())
+			stack.add(new Stato(1, n, null).setRoot());
+		
+		//ora inizio la dfs come 
+			
+		
+		
+		
+		
+	}
+	
+	/**
+	 * Classe per indicare stato
+	 * @author Max
+	 *
+	 */
+	private class Stato{
+		
+		private Node lastNode;
+		private int d; //profondità
+		private Stato parent;
+		private boolean isRoot=false;
+		
+		private int costo=-1;
+		/**
+		 * 
+		 * @param k numero di nodi attraversati
+		 * @param cammino array dei nodi attraversati
+		 * @param p stato parent se esiste
+		 */
+		public Stato(int k, Node last, Stato p)
+		{
+			d=k;
+			lastNode=last;
+			parent=p;
+		}
+		
+		public Stato setRoot() { isRoot=true; costo=0; }
+		
+		public Node getLastNode() {
+			return lastNode;
+		}
+		
+		/**
+		 * Restituisce il costo del cammino fino a lastNode
+		 * @return
+		 */
+		public int getCost()
+		{
+			if(costo>=0) return costo;
+			
+			costo= parent.getCost() + parent.getLastNode().getWeight(lastNode);
+			return costo;
+		}
+		
+		
+	}
+	
+	
+	public int[] process1() {
+		if(used) return null;
+		used=true;
 		
 		for (Node n : grafo.getNodes()) {
 			if(Options.COUNTER_ON) counter++;

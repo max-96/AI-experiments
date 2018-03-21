@@ -7,6 +7,10 @@ import java.util.ArrayList;
 
 public class Graph {
 
+	/**
+	 * String that contains the name of the graph 
+	 */
+	private String name = null;
 	private int size;
 	private ArrayList<Node> vertex;
 	private Node[] nodes;
@@ -53,13 +57,36 @@ public class Graph {
 			
 		}
 		
-		
-		
-		
 	}
 	
+	/**
+	 * 	
+	 */
+	public Graph(String filename,String name) throws IOException
+	{
+		this(filename);
+		this.name = name;
+		
+	}
+		
 	public int getSize() {return size;}
 	
 	public Node[] getNodes() {return nodes.clone();}
+	
+	/**
+	 * Function that Prints the Graph 
+	 * Version 0.1
+	 */
+	public void printGraph()
+	{
+		System.out.println("Printing Graph of name: "+this.name);	
+		for(int i=0;i<this.size;i++)
+		{
+			System.out.print("Node n° "+i+" with Id "+this.nodes[i].getId()+" is connected to nodes:");
+			for(Node n : this.nodes[i].getAdjacentNodes())
+				System.out.println(" "+n.getId()+" with cost "+ this.nodes[i].getWeight(n));
+		}
+		return;
+	}
 	
 }

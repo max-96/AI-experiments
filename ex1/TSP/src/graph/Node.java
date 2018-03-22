@@ -50,4 +50,8 @@ public class Node {
 	}
 	
 	public int getId() { return id;}
+	public String toString()
+	{
+		return id+"";
+	}
 }

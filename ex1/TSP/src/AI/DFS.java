@@ -137,7 +137,7 @@ public class DFS implements TSPSolver {
 				visitati = new HashSet<>(parent.visitati);
 			visitati.add(lastNode);
 
-			costo = parent.getCost() + parent.getLastNode().getWeight(lastNode);
+			if(!isRoot) costo = parent.getCost() + parent.getLastNode().getWeight(lastNode);
 			return this;
 		}
 
@@ -166,17 +166,21 @@ public class DFS implements TSPSolver {
 		public int getDepth() {
 			return depth;
 		}
-		public int getIterationCounter()
-		{
-			return counter;
-		}
-		public int getSolutionCounter()
-		{
-			return soluzTrovate;
-		}
-
+		
 	}
 
+	public int getIterationCounter()
+	{
+		return counter;
+	}
+	public int getSolutionCounter()
+	{
+		return soluzTrovate;
+	}
+	public int getSolutionCost()
+	{
+		return minCost;
+	}
 
 
 

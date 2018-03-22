@@ -17,8 +17,10 @@ public class Testing {
 	{
 		Graph g=new Graph("input/grafo1");
 		DFS dfs=new DFS(g);
-		System.out.println((Arrays.toString(dfs.process())));
 		
+		System.out.printf("Costo Soluz.:\t%d\nIterazioni:\t%d\nSoluzioni:\t%d\n", dfs.getSolutionCost(),  dfs.getIterationCounter(), dfs.getSolutionCounter());
+		System.out.println((Arrays.toString(dfs.process())));
+	
 	}
 	
 }

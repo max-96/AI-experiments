@@ -5,216 +5,179 @@ import java.util.LinkedList;
 
 import graph.Graph;
 import graph.Node;
-import graph.Path;
 import testing.Options;
 
 public class DFS implements TSPSolver {
 
-	private Graph grafo; //grafo da risolvere
-	
-	
-	private int counter = 0; //contatore azioni
-	private int soluzTrovate=0; //contatore soluzioni
+	private Graph grafo; // grafo da risolvere
 
-	private int[] minCammino;
-	private int minCost=Integer.MAX_VALUE;
-	private boolean used=false;
+	private int counter = 0; // contatore azioni
+	private int soluzTrovate = 0; // contatore soluzioni
 
-	private int[] cammino;
-	private int[] tempCosti;
+	private Stato minSoluzione;
+	private int minCost = Integer.MAX_VALUE;
+	private boolean used = false;
+
+
 
 	public DFS(Graph g) {
 		grafo = g;
-		cammino = new int[g.getSize() + 1];
-		tempCosti = new int[g.getSize() + 1];
 	}
 
-	
-	public Node[] process()
-	{
-		//stack dove salvo gli stati
-		LinkedList<Stato> stack;
+	public Node[] process() {
 		
-		//popolo la stack con gli stati root di tutti i nodi
-		for(Node n: grafo.getNodes())
+		if(used) return null;
+		
+		// stack dove salvo gli stati
+		LinkedList<Stato> stack = new LinkedList<>();
+
+		// popolo la stack con gli stati root di tutti i nodi
+		for (Node n : grafo.getNodes())
 			stack.add(new Stato(n, null, true));
-		
-		//ora inizio la dfs iterativa, come un buffer LIFO
-		
-		while(!stack.isEmpty())
-		{
-			if(Options.COUNTER_ON)
+
+		int N = grafo.getSize(); // numero vertici del grafo
+
+		// ora inizio la dfs iterativa, come un buffer LIFO
+
+		while (!stack.isEmpty()) {
+			if (Options.ITER_COUNTER_ON)
 				counter++;
-			
-			Stato s=stack.removeLast();
-			
-			
-			if(s.getDepth() == grafo.getSize())
-			{
-				//Mossa obbligata, deve tornare allo stato iniziale
-				
-			}
-			else
-			{
-				Node e=s.getLastNode();
-				for(Node i: e.getAdjacentNodes())
-				{
-					if(!s.isVisited(i))
-					{
-						Stato t=new Stato(i, s, false);
-						t.getCost();
-						stack.add(t);
+
+			Stato s = stack.removeLast().expand();
+
+			if (s.getDepth() == N) {
+				Node l = s.getLastNode();
+				if (l.getAdjacentNodes().contains(s.rootNode)) {
+					
+					if (Options.SOLUTION_COUNTER_ON)
+						soluzTrovate++;
+					
+					Stato sol=new Stato(s.getRootNode(), s, false).expand();
+					if(minCost > sol.getCost())
+					{//Se la soluzione è migliore di quella finora trovata
+						minCost=sol.getCost();
+						minSoluzione=sol;
 						
 					}
+					
 				}
-				
+			} else {
+				Node e = s.getLastNode();
+				for (Node i : e.getAdjacentNodes()) {
+					if (!s.isVisited(i)) 
+						stack.add(new Stato(i, s, false));
+
+					
+				}
+
 			}
-			
-			
-			
-			
+
 		}
-			
 		
+		used=true;
+		if(minSoluzione==null) return null;
+		Node[] soluzione=new Node[N+1];
 		
-		
-		
+		Stato f=minSoluzione;
+		for(int i=N;i>=0;i--)
+		{
+			 soluzione[i]=f.getLastNode();
+			 f=f.getParent();
+		}
+		return soluzione;
+
 	}
-	
+
 	/**
 	 * Classe per indicare stato
+	 * 
 	 * @author Max
 	 *
 	 */
-	private class Stato{
-		
+	private class Stato {
+
 		private Node lastNode;
 		private Node rootNode;
-		private int depth; //profondità
+		private int depth; // profondità
 		private Stato parent;
-		private boolean isRoot=false;
+		private boolean isRoot = false;
 		private HashSet<Node> visitati;
-		
-		
-		private int costo=-1;
+
+		private int costo = -1;
+
 		/**
 		 * 
-		 * @param k numero di nodi attraversati
-		 * @param cammino array dei nodi attraversati
-		 * @param p stato parent se esiste
+		 * @param k
+		 *            numero di nodi attraversati
+		 * @param cammino
+		 *            array dei nodi attraversati
+		 * @param p
+		 *            stato parent se esiste
 		 */
-		public Stato(Node last, Stato p, boolean isRoot)
-		{
-			lastNode=last;
-			if(isRoot)
-			{
-				this.isRoot=true;
-				rootNode=last;
-				visitati=new HashSet<>();
-				parent=null;
-				depth=1;
+		public Stato(Node last, Stato p, boolean isRoot) {
+			lastNode = last;
+			if (isRoot) {
+				this.isRoot = true;
+				rootNode = last;
+				visitati = new HashSet<>();
+				parent = null;
+				depth = 1;
+				costo=0;
+			} else {
+				parent = p;
+				rootNode = p.rootNode;
+				depth = p.depth + 1;
 			}
-			else
-			{
-				parent=p;
-				rootNode=p.rootNode;
-				visitati=new HashSet<>(p.visitati);
-				depth=p.depth+1;
-			}
-			visitati.add(last);
 		}
-		
-		
-		
-		public boolean isVisited(Node e)
-		{
+
+		public Stato expand() {
+			if (isRoot)
+				visitati = new HashSet<>();
+			else
+				visitati = new HashSet<>(parent.visitati);
+			visitati.add(lastNode);
+
+			costo = parent.getCost() + parent.getLastNode().getWeight(lastNode);
+			return this;
+		}
+
+		public boolean isVisited(Node e) {
+			if (visitati == null)
+				expand();
 			return visitati.contains(e);
+		}
+
+		public Stato getParent()
+		{
+			return parent;
 		}
 		public Node getLastNode() {
 			return lastNode;
 		}
-		
-		/**
-		 * Restituisce il costo del cammino fino a lastNode
-		 * @return
-		 */
-		public int getCost()
-		{
-			if(costo>=0) return costo;
-			
-			costo= parent.getCost() + parent.getLastNode().getWeight(lastNode);
+		public Node getRootNode() {
+			return rootNode;
+		}
+		public int getCost() {
+			if (costo >= 0)
+				return costo;
+			costo = parent.getCost() + parent.lastNode.getWeight(lastNode);
 			return costo;
 		}
-		
-		public int getDepth()
-		{
+		public int getDepth() {
 			return depth;
 		}
-		
-	}
-	
-	
-	public int[] process1() {
-		if(used) return null;
-		used=true;
-		
-		for (Node n : grafo.getNodes()) {
-			if(Options.COUNTER_ON) counter++;
-			cammino[0] = n.getId();
-			tempCosti[0] = 0;
-			dfs(1, n);
+		public int getIterationCounter()
+		{
+			return counter;
+		}
+		public int getSolutionCounter()
+		{
+			return soluzTrovate;
 		}
 
-		//return new Path(minCammino);
-		return minCammino;
 	}
 
-	/**
-	 * k è il numero di vertici già inseriti nel cammino
-	 * @param k il numero di vertici già inseriti nel cammino
-	 * @param u	il vertice padre
-	 */
-	private void dfs(int k, Node u) {
-		if(Options.COUNTER_ON) counter++;
-		if (k <= grafo.getSize()) {
-			for (Node v : u.getAdjacentNodes()) {
-				
-				boolean f=false;
-				
-				for(int i=0;i<k;i++)
-					if(v.getId()==cammino[i]) {f=true; break;}
 
-				if(f) continue;
-				
-				cammino[k]=u.getId();
-				tempCosti[k]=tempCosti[k-1] + u.getWeight(v);
-				dfs(k + 1, v);
-			}
-		}
-		else {
-			for(Node v: u.getAdjacentNodes())
-			{
-				if(v.getId()==cammino[0])
-				{
-					soluzTrovate++;
-					
-					tempCosti[k]= tempCosti[k-1] + u.getWeight(v);
-					cammino[k]=cammino[0];
-					if(minCost>tempCosti[k]) {
-						for(int i=0;i<grafo.getSize()+1;i++)
-							minCammino[i]=cammino[i];
-						
-						minCost=tempCosti[k];
-						
-					}
-					
-					
-					break;
-				}
-			}
-					
-		}
-		
-	}
+
 
 }

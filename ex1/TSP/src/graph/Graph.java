@@ -8,7 +8,6 @@ import java.util.ArrayList;
 public class Graph {
 
 	private int size;
-	private ArrayList<Node> vertex;
 	private Node[] nodes;
 	private int maxWeight=Integer.MIN_VALUE;
 	

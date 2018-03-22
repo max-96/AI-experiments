@@ -1,8 +1,8 @@
 package AI;
 
-import graph.Path;
+import graph.Node;
 
 public interface TSPSolver {
 
-	public int[] process();
+	public Node[] process();
 }

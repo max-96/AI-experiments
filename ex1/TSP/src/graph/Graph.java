@@ -3,7 +3,6 @@ package graph;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
 
 public class Graph {
 
@@ -39,7 +38,7 @@ public class Graph {
 				if(v>=size || v>=size) continue;
 				if(w>maxWeight) maxWeight=w;
 				
-				System.out.printf("%d %d %d\n", u, v, w);
+				//System.out.printf("%d %d %d\n", u, v, w);
 				//creo i nodi se non esistono
 				if(nodes[u]==null) nodes[u]=new Node(u);
 				if(nodes[v]==null) nodes[v]=new Node(v);

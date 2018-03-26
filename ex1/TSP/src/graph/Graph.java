@@ -66,6 +66,15 @@ public class Graph {
 		this.name = name;
 		
 	}
+	
+	/**
+	 * create a graph of size "size" with no edges;
+	 * @param size
+	 */
+	public Graph(int size)
+	{
+		//da implementare
+	}
 		
 	public int getSize() {return size;}
 	
